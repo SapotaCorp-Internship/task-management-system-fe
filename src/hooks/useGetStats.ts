@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import useGetTasks from "./useTask";
 
 export default function useGetStats() {
-  const { tasks, loading, refetch } = useGetTasks();
+  const { tasks, loading, fetchTasks: refetch } = useGetTasks();
 
   const stats = useMemo(() => {
     const total = tasks.length;

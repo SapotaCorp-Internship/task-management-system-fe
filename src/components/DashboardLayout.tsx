@@ -1,4 +1,4 @@
-import { useState, ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Button } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import AppSidebar from "./AppSidebar";

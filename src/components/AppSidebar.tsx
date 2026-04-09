@@ -10,7 +10,7 @@ import {
 } from "@ant-design/icons";
 import useCategories from "../hooks/useCategory"; 
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 interface AppSidebarProps {
   collapsed: boolean;

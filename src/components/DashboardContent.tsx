@@ -300,7 +300,7 @@ const renderStats = () => {
             showTime
             format="HH:mm - DD/MM/YYYY"
             className="w-full"
-            defaultValue={record.deadline ? dayjs(record.deadline) : null}
+            defaultValue={record.deadline ? dayjs(record.deadline) : undefined}
             onChange={(date) =>
               handleUpdateTask(record.key, { deadline: date ? date.toISOString() : null })
             }
