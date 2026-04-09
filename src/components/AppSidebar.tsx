@@ -6,9 +6,11 @@ import {
   DeleteOutlined, 
   EditOutlined, 
   CheckOutlined, 
-  CloseOutlined 
+  CloseOutlined,
+  LogoutOutlined
 } from "@ant-design/icons";
 import useCategories from "../hooks/useCategory"; 
+import useAuth from "../hooks/useAuth"; 
 
 const { Title } = Typography;
 
@@ -30,6 +32,7 @@ export default function AppSidebar({ collapsed }: AppSidebarProps) {
   const [newName, setNewName] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  const { handleLogout, loading: isLoggingOut } = useAuth();
 
   const onAddSubmit = async () => {
     if (!newName.trim()) return setIsAdding(false);
@@ -139,6 +142,23 @@ export default function AppSidebar({ collapsed }: AppSidebarProps) {
           >
             {isAdding ? "Cancel" : "Add Category"}
           </Button>
+          <Popconfirm
+          title="Are you sure you want to logout?"
+          onConfirm={handleLogout}
+          okText="Logout"
+          cancelText="Stay"
+          okButtonProps={{ danger: true, loading: isLoggingOut }}
+        >
+          <Button 
+            type="text" 
+            danger 
+            block 
+            icon={<LogoutOutlined />}
+            className={`flex items-center ${collapsed ? "justify-center" : "justify-start"}`}
+          >
+            {!collapsed && "Logout"}
+          </Button>
+        </Popconfirm>
         </div>
       )}
     </div>

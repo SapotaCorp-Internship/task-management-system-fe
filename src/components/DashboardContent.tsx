@@ -46,7 +46,6 @@ export default function DashboardContent() {
   const [taskFormOpen, setTaskFormOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   
-  // States cho Filter "truyền thống"
   const [filterPriority, setFilterPriority] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
   const [filterCategory, setFilterCategory] = useState<number | null>(null);
@@ -75,7 +74,6 @@ export default function DashboardContent() {
     }
   }, [searchParams, messageApi, navigate]);
 
-  // --- LOGIC FILTER & SEARCH TẬP TRUNG ---
   const processedData = useMemo(() => {
     return tasks.filter((t) => {
       const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -117,7 +115,6 @@ export default function DashboardContent() {
     }
   };
 const renderStats = () => {
-    // Nếu stats từ API chưa có hoặc đang load, Skeleton sẽ chạy
     return (
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4 mb-8">
         {stats.map((item) => (
@@ -140,18 +137,11 @@ const renderStats = () => {
                   className="p-3 rounded-xl flex items-center justify-center" 
                   style={{ backgroundColor: `${item.color}15`, color: item.color }}
                 >
-                  {/* Icon thay đổi theo Label (Tùy biến theo data của bạn) */}
                   {item.label.includes("Done") || item.label.includes("Completed") ? <CheckCircleOutlined className="text-xl" /> : 
                    item.label.includes("Progress") ? <SyncOutlined spin className="text-xl" /> : 
                    item.label.includes("Todo") ? <ClockCircleOutlined className="text-xl" /> : 
-                   <FileTextOutlined className="text-xl" />}
+                   <FileTextOutlined className="text-xl" />}    
                 </div>
-              </div>
-              <div className="mt-4 w-full h-1 bg-gray-100 rounded-full">
-                <div 
-                  className="h-full rounded-full transition-all duration-500" 
-                  style={{ backgroundColor: item.color, width: '40%' }} // Bạn có thể tính % ở đây
-                />
               </div>
             </Skeleton>
           </Card>
