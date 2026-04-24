@@ -18,9 +18,19 @@ export interface Task {
   createdAt: string; 
   updatedAt: string; 
 }
+type GetTasksResponse = {
+  data: {
+    tasks: Task[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+};
 
-
-export const getTasks = () => api.get<Task[]>("/tasks");
+export const getTasks = () => api.get<GetTasksResponse>("/tasks");
 export const createTask = (data: { title: string; description?: string; categoryId?: string }) =>
   api.post("/tasks", data);
 export const updateTask = (id: string, data: Partial<Task>) => api.put(`/tasks/${id}`, data);
