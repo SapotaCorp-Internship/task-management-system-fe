@@ -12,18 +12,24 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function initAuth() {
-      const user = await checkAuth();
+  async function initAuth() {
+    try {
+      // Thiết lập một khoảng thời gian chờ tối đa (Timeout) là 5 giây
+      const user = await Promise.race([
+        checkAuth(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 5000))
+      ]);
       
-      if (user) {
-        setCurrentUser(user);
-      } else {
-        console.warn("⚠️ [App] Không tìm thấy user hoặc chưa đăng nhập.");
-      }
-      setLoading(false);
+      if (user) setCurrentUser(user);
+    } catch (error) {
+      console.warn("⚠️ Backend phản hồi chậm hoặc chưa đăng nhập.");
+    } finally {
+      // Dù thành công hay thất bại (do server ngủ), vẫn tắt loading để hiện trang Login
+      setLoading(false); 
     }
-    initAuth();
-  }, []);
+  }
+  initAuth();
+}, []);
 
   useReminder(currentUser?.id || null);
 
