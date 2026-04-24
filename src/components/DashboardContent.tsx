@@ -43,7 +43,7 @@ export default function DashboardContent() {
 
   const [taskFormOpen, setTaskFormOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   const [filterPriority, setFilterPriority] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
   const [filterCategory, setFilterCategory] = useState<number | null>(null);
@@ -74,13 +74,20 @@ export default function DashboardContent() {
 
   const processedData = useMemo(() => {
     return tasks.filter((t) => {
-      const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            t.description?.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesPriority = filterPriority ? t.priority === filterPriority : true;
+      const matchesSearch =
+        t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesPriority = filterPriority
+        ? t.priority === filterPriority
+        : true;
       const matchesStatus = filterStatus ? t.rawStatus === filterStatus : true;
-      const matchesCategory = filterCategory ? t.categoryId === filterCategory : true;
+      const matchesCategory = filterCategory
+        ? t.categoryId === filterCategory
+        : true;
 
-      return matchesSearch && matchesPriority && matchesStatus && matchesCategory;
+      return (
+        matchesSearch && matchesPriority && matchesStatus && matchesCategory
+      );
     });
   }, [tasks, searchQuery, filterPriority, filterStatus, filterCategory]);
 
@@ -96,7 +103,7 @@ export default function DashboardContent() {
     setHistoryLoading(true);
     try {
       const res = await getTaskHistoryById(id);
-      setCurrentHistory(res?.data || res || []);
+      setCurrentHistory(res || []);
     } catch (err) {
       console.error("Error fetching history:", err);
     } finally {
@@ -112,7 +119,7 @@ export default function DashboardContent() {
       console.error("Add task error:", err);
     }
   };
-const renderStats = () => {
+  const renderStats = () => {
     return (
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4 mb-8">
         {stats.map((item) => (
@@ -124,21 +131,36 @@ const renderStats = () => {
             <Skeleton loading={statsLoading} active paragraph={{ rows: 1 }}>
               <div className="flex items-center justify-between">
                 <div>
-                  <Text type="secondary" className="text-xs font-bold uppercase tracking-widest block mb-1">
+                  <Text
+                    type="secondary"
+                    className="text-xs font-bold uppercase tracking-widest block mb-1"
+                  >
                     {item.label}
                   </Text>
-                  <Title level={2} className="!mb-0 !mt-0 font-bold text-gray-800">
+                  <Title
+                    level={2}
+                    className="!mb-0 !mt-0 font-bold text-gray-800"
+                  >
                     {String(item.value).padStart(2, "0")}
                   </Title>
                 </div>
-                <div 
-                  className="p-3 rounded-xl flex items-center justify-center" 
-                  style={{ backgroundColor: `${item.color}15`, color: item.color }}
+                <div
+                  className="p-3 rounded-xl flex items-center justify-center"
+                  style={{
+                    backgroundColor: `${item.color}15`,
+                    color: item.color,
+                  }}
                 >
-                  {item.label.includes("Done") || item.label.includes("Completed") ? <CheckCircleOutlined className="text-xl" /> : 
-                   item.label.includes("Progress") ? <SyncOutlined spin className="text-xl" /> : 
-                   item.label.includes("Todo") ? <ClockCircleOutlined className="text-xl" /> : 
-                   <FileTextOutlined className="text-xl" />}    
+                  {item.label.includes("Done") ||
+                  item.label.includes("Completed") ? (
+                    <CheckCircleOutlined className="text-xl" />
+                  ) : item.label.includes("Progress") ? (
+                    <SyncOutlined spin className="text-xl" />
+                  ) : item.label.includes("Todo") ? (
+                    <ClockCircleOutlined className="text-xl" />
+                  ) : (
+                    <FileTextOutlined className="text-xl" />
+                  )}
                 </div>
               </div>
             </Skeleton>
@@ -157,14 +179,14 @@ const renderStats = () => {
         className="w-full sm:w-[220px] rounded-lg"
         allowClear
       />
-      
+
       <Select
         placeholder="Category"
         className="w-[150px]"
         allowClear
         value={filterCategory}
         onChange={setFilterCategory}
-        options={categories?.map(c => ({ label: c.name, value: c.id }))}
+        options={categories?.map((c) => ({ label: c.name, value: c.id }))}
       />
 
       <Select
@@ -193,8 +215,8 @@ const renderStats = () => {
         ]}
       />
 
-      <Button 
-        icon={<ReloadOutlined />} 
+      <Button
+        icon={<ReloadOutlined />}
         onClick={resetFilters}
         className="text-gray-500 hover:text-blue-600 border-none bg-transparent shadow-none"
       >
@@ -203,7 +225,6 @@ const renderStats = () => {
     </div>
   );
 
-  
   const renderTable = () => {
     const columns = [
       {
@@ -221,7 +242,7 @@ const renderStats = () => {
               }
             />
             <Text type="secondary" className="text-[11px] px-1 line-clamp-1">
-                {record.description || "No description"}
+              {record.description || "No description"}
             </Text>
           </div>
         ),
@@ -236,7 +257,9 @@ const renderStats = () => {
             className="w-full"
             value={record.categoryId}
             loading={actionLoading === record.key}
-            onChange={(val) => handleUpdateTask(record.key, { categoryId: val })}
+            onChange={(val) =>
+              handleUpdateTask(record.key, { categoryId: val })
+            }
             options={categories?.map((c) => ({ label: c.name, value: c.id }))}
             placeholder="Select Category"
           />
@@ -272,8 +295,14 @@ const renderStats = () => {
             onChange={(val) => handleUpdateTask(record.key, { status: val })}
             options={[
               { value: "TODO", label: <Badge status="default" text="To Do" /> },
-              { value: "DOING", label: <Badge status="processing" text="In Progress" /> },
-              { value: "DONE", label: <Badge status="success" text="Completed" /> },
+              {
+                value: "DOING",
+                label: <Badge status="processing" text="In Progress" />,
+              },
+              {
+                value: "DONE",
+                label: <Badge status="success" text="Completed" />,
+              },
             ]}
           />
         ),
@@ -290,7 +319,9 @@ const renderStats = () => {
             className="w-full"
             defaultValue={record.deadline ? dayjs(record.deadline) : undefined}
             onChange={(date) =>
-              handleUpdateTask(record.key, { deadline: date ? date.toISOString() : null })
+              handleUpdateTask(record.key, {
+                deadline: date ? date.toISOString() : undefined,
+              })
             }
           />
         ),
@@ -306,7 +337,10 @@ const renderStats = () => {
               icon={<HistoryOutlined className="text-blue-500" />}
               onClick={() => handleViewHistory(record.key)}
             />
-            <Popconfirm title="Xóa công việc?" onConfirm={() => handleDeleteTask(record.key)}>
+            <Popconfirm
+              title="Xóa công việc?"
+              onConfirm={() => handleDeleteTask(record.key)}
+            >
               <Button type="text" danger icon={<DeleteOutlined />} />
             </Popconfirm>
           </Space>
@@ -317,9 +351,12 @@ const renderStats = () => {
     return (
       <Card className="rounded-3xl border-0 shadow-sm bg-white p-4">
         <div className="mb-6 px-2">
-          <Title level={4} className="!mb-0">List of Tasks</Title>
+          <Title level={4} className="!mb-0">
+            List of Tasks
+          </Title>
           <Text type="secondary" className="text-xs italic">
-            Manage your tasks with ease. Click on a task to edit details or view history.
+            Manage your tasks with ease. Click on a task to edit details or view
+            history.
           </Text>
         </div>
         <Table
@@ -337,16 +374,20 @@ const renderStats = () => {
   return (
     <div className="p-0">
       {contextHolder}
-      
+
       <div className="flex justify-between items-center mb-6">
         <div>
-          <Title level={2} className="!mb-0">Task Dashboard</Title>
-          <Text type="secondary">Organize and track your daily productivity.</Text>
+          <Title level={2} className="!mb-0">
+            Task Dashboard
+          </Title>
+          <Text type="secondary">
+            Organize and track your daily productivity.
+          </Text>
         </div>
-        <Button 
-          type="primary" 
-          icon={<PlusOutlined />} 
-          className="rounded-lg h-10 px-6 bg-blue-600 shadow-md" 
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          className="rounded-lg h-10 px-6 bg-blue-600 shadow-md"
           onClick={() => setTaskFormOpen(true)}
         >
           New Task
@@ -362,48 +403,97 @@ const renderStats = () => {
         onClose={() => setTaskFormOpen(false)}
         onSubmit={onAddTask}
         fields={[
-          { name: "title", label: "Title", type: "text", rules: [{ required: true }] },
+          {
+            name: "title",
+            label: "Title",
+            type: "text",
+            rules: [{ required: true }],
+          },
           { name: "description", label: "Description", type: "text" },
-          { name: "categoryId", label: "Category", type: "select", options: categories?.map(c => ({ label: c.name, value: c.id })) || [] },
-          { name: "priority", label: "Priority", type: "select", options: ["LOW", "MEDIUM", "HIGH"], rules: [{ required: true }] },
-          { name: "status", label: "Status", type: "select", options: [{ label: "To Do", value: "TODO" }, { label: "In Progress", value: "DOING" }, { label: "Completed", value: "DONE" }], rules: [{ required: true }] },
+          {
+            name: "categoryId",
+            label: "Category",
+            type: "select",
+            options:
+              categories?.map((c) => ({ label: c.name, value: c.id })) || [],
+          },
+          {
+            name: "priority",
+            label: "Priority",
+            type: "select",
+            options: ["LOW", "MEDIUM", "HIGH"],
+            rules: [{ required: true }],
+          },
+          {
+            name: "status",
+            label: "Status",
+            type: "select",
+            options: [
+              { label: "To Do", value: "TODO" },
+              { label: "In Progress", value: "DOING" },
+              { label: "Completed", value: "DONE" },
+            ],
+            rules: [{ required: true }],
+          },
           { name: "deadline", label: "Deadline", type: "date" },
         ]}
         title="Create New Task"
         confirmLoading={loading}
       />
 
-      <Modal title="Change History" open={historyOpen} onCancel={() => setHistoryOpen(false)} footer={null} width={450} centered>
+      <Modal
+        title="Change History"
+        open={historyOpen}
+        onCancel={() => setHistoryOpen(false)}
+        footer={null}
+        width={450}
+        centered
+      >
         <div className="py-2 max-h-[500px] overflow-y-auto pr-2">
           <Skeleton loading={historyLoading} active>
-            <Timeline items={currentHistory.map((h: any) => {
+            <Timeline
+              items={currentHistory.map((h: any) => {
                 const isCreate = h.action === "CREATED" || !h.oldValue;
                 const isDeadline = h.action?.includes("DEADLINE");
                 const formatValue = (val: string) => {
                   if (!val || val === "null") return "Trống";
-                  if (isDeadline) return dayjs(val).isValid() ? dayjs(val).format("HH:mm - DD/MM/YYYY") : val;
+                  if (isDeadline)
+                    return dayjs(val).isValid()
+                      ? dayjs(val).format("HH:mm - DD/MM/YYYY")
+                      : val;
                   return val.length > 30 ? `${val.slice(0, 30)}...` : val;
                 };
                 return {
                   children: (
                     <div className="flex flex-col mb-2">
-                      <Text type="secondary" className="text-[11px]">{dayjs(h.changedAt).format("HH:mm - DD/MM/YYYY")}</Text>
+                      <Text type="secondary" className="text-[11px]">
+                        {dayjs(h.changedAt).format("HH:mm - DD/MM/YYYY")}
+                      </Text>
                       <div className="text-sm mt-1">
-                        <Text strong className="text-blue-700 mr-2">{h.action}:</Text>
+                        <Text strong className="text-blue-700 mr-2">
+                          {h.action}:
+                        </Text>
                         {isCreate ? (
-                          <Text italic className="text-gray-500">Task created</Text>
+                          <Text italic className="text-gray-500">
+                            Task created
+                          </Text>
                         ) : (
                           <>
-                            <Text delete className="text-gray-400">{formatValue(h.oldValue)}</Text>
+                            <Text delete className="text-gray-400">
+                              {formatValue(h.oldValue)}
+                            </Text>
                             <span className="mx-2 text-gray-400">→</span>
-                            <Text className="text-blue-600 font-medium">{formatValue(h.newValue)}</Text>
+                            <Text className="text-blue-600 font-medium">
+                              {formatValue(h.newValue)}
+                            </Text>
                           </>
                         )}
                       </div>
                     </div>
                   ),
                 };
-            })} />
+              })}
+            />
           </Skeleton>
         </div>
       </Modal>
