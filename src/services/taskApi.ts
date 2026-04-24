@@ -1,7 +1,5 @@
-import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
+import api from "./api";
 export interface Task {
   id: string;
   title: string;
@@ -21,10 +19,6 @@ export interface Task {
   updatedAt: string; 
 }
 
-const api = axios.create({
-  baseURL: API_URL,
-  withCredentials: true,
-});
 
 export const getTasks = () => api.get<Task[]>("/tasks");
 export const createTask = (data: { title: string; description?: string; categoryId?: string }) =>

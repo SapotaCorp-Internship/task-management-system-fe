@@ -1,52 +1,50 @@
-import { useState, useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import { message } from "antd";
-import { 
-  getCategories, 
-  createCategory, 
-  updateCategory, 
-  deleteCategory, 
-  type Category 
+import {
+  getCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
 } from "../services/categoryApi";
+import { useCategoryStore } from "../stores/categoryStore";
 
 export default function useCategories() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [actionLoading, setActionLoading] = useState(false);
+  const {
+    categories,
+    loading,
+    actionLoading,
+    error,
+    setCategories,
+    setLoading,
+    setActionLoading,
+    setError,
+  } = useCategoryStore();
 
-  const fetchCategories = useCallback(async () => {
+  const fetchCategories = async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await getCategories();
-      const rawData = res.data;
-      let finalArray: Category[] = [];
-
-      if (Array.isArray(rawData)) {
-        finalArray = rawData;
-      } else if (rawData && typeof rawData === 'object') {
-        finalArray = (rawData as any).categories || (rawData as any).data || (rawData as any).data?.categories || [];
-      }
-      
-      setCategories(finalArray);
-    } catch (error) {
-      console.error("❌ [useCategories] Fetch error:", error);
-      setCategories([]); 
+      const raw = res.data;
+      const data = Array.isArray(raw)
+        ? raw
+        : (raw as any)?.categories ?? (raw as any)?.data?.categories ?? (raw as any)?.data ?? [];
+      setCategories(data);
+    } catch (error: any) {
+      setError(error.message ?? "Failed to fetch categories");
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   const handleCreateCategory = async (name: string) => {
     setActionLoading(true);
     try {
       await createCategory(name);
       message.success("Added new category");
-      await fetchCategories(); 
-      
-      window.dispatchEvent(new Event("categoryUpdated"));
-    } catch (error: any) {
-      console.error("❌ [useCategories] Create error:", error);
+      await fetchCategories();
+    } catch {
       message.error("Failed to add category");
-      throw error;
     } finally {
       setActionLoading(false);
     }
@@ -58,9 +56,7 @@ export default function useCategories() {
       await updateCategory(id, name);
       message.success("Updated category successfully");
       await fetchCategories();
-      window.dispatchEvent(new Event("categoryUpdated"));
-    } catch (error) {
-      console.error("❌ [useCategories] Update error:", error);
+    } catch {
       message.error("Failed to update category");
     } finally {
       setActionLoading(false);
@@ -68,28 +64,30 @@ export default function useCategories() {
   };
 
   const handleDeleteCategory = async (id: string) => {
+    setActionLoading(true);
     try {
       await deleteCategory(id);
       message.success("Deleted category successfully");
       await fetchCategories();
-      window.dispatchEvent(new Event("categoryUpdated"));
-    } catch (error) {
-      console.error("❌ [useCategories] Delete error:", error);
+    } catch {
       message.error("Failed to delete category");
+    } finally {
+      setActionLoading(false);
     }
   };
 
   useEffect(() => {
     fetchCategories();
-  }, [fetchCategories]);
+  }, []);
 
   return {
     categories,
     loading,
     actionLoading,
+    error,
     refetch: fetchCategories,
     handleCreateCategory,
     handleUpdateCategory,
-    handleDeleteCategory
+    handleDeleteCategory,
   };
 }

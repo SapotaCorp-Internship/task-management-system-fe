@@ -1,5 +1,5 @@
 import { getTaskHistory } from "./../services/taskApi";
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { message } from "antd";
 import {
   getTasks,
@@ -8,6 +8,7 @@ import {
   deleteTask,
   type Task,
 } from "../services/taskApi";
+import { useTaskStore } from "../stores/taskStore";
 
 export interface TaskItem {
   key: string;
@@ -24,11 +25,7 @@ export interface TaskItem {
 }
 
 export default function useTasks() {
-  const [tasks, setTasks] = useState<TaskItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [actionLoading, setActionLoading] = useState<string | boolean | null>(
-    null,
-  );
+  const { tasks, loading, actionLoading, setTasks, setLoading, setActionLoading } = useTaskStore();
 
   const fetchTasks = useCallback(async () => {
     setLoading(true);
@@ -117,7 +114,7 @@ export default function useTasks() {
       await updateTask(id, data);
       message.success("Updated task successfully");
       await fetchTasks();
-    } catch (error: any) {
+    } catch {
       message.error("Failed to update task");
     } finally {
       setActionLoading(null);

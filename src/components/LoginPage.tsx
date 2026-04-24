@@ -12,7 +12,7 @@ import {
 import { GoogleOutlined, UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { checkAuth } from "../utils/checkAuth";
-import useGoogleLogin from "../hooks/useGoogleLogin";
+import useAuth from "../hooks/useAuth";
 
 const { Title, Text } = Typography;
 
@@ -21,11 +21,7 @@ export default function Login() {
   const [searchParams] = useSearchParams();
   const [messageApi, contextHolder] = message.useMessage();
   const [checkingAuth, setCheckingAuth] = useState(true);
-  const {
-    googleLoading,
-    handleGoogleLogin,
-    contextHolder: googleToast,
-  } = useGoogleLogin();
+  const { loading, handleGoogleLogin } = useAuth();
 
   useEffect(() => {
     let active = true;
@@ -33,9 +29,7 @@ export default function Login() {
     const verifyAuth = async () => {
       const user = await checkAuth();
 
-      if (!active) {
-        return;
-      }
+      if (!active) return;
 
       if (user) {
         navigate("/dashboard", { replace: true });
@@ -74,7 +68,6 @@ export default function Login() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       {contextHolder}
-      {googleToast}
       <Card className="w-[380px] shadow-lg rounded-xl">
         <div className="text-center mb-6">
           <Title level={3}>TaskFlow</Title>
@@ -115,7 +108,7 @@ export default function Login() {
           icon={<GoogleOutlined />}
           size="large"
           block
-          loading={googleLoading}
+          loading={loading}
           onClick={handleGoogleLogin}
         >
           Login with Google
